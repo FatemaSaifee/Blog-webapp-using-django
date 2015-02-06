@@ -1,0 +1,63 @@
+Intro to Djano contaroller
+
+Brief introduction of http request and http response
+
+Http response contains:
+
+    1.Header, which contains information such as the format of return data, etc
+
+    2.Status code. This is something you really need to know. Each code has its explicit meaning and should not be misused. Here’s some examples (from the official document)
+        200: Successful response
+        302: Found. But the requested resource resides temporarily under a different URI.
+        400: Bad request. The request could not be understood by the server due to malformed syntax. The client SHOULD NOT repeat the request without modifications.
+        401: Unauthorized. The request requires user authentication.
+        404: Not Found. The server has not found anything matching the Request-URI. You’re probably very familiar with this one :)
+When implementing a web server, it’s very important to send the correct response to clients under different situations. So have in mind about this, and refer to the official documentation when needed.
+    3.Data payload. The data payload can be text, html, binary data, etc. 
+
+
+
+
+
+Django's HttpRequest, HttpResponse, and Url dispatching
+-------------------------------------------
+def login(request):
+
+    #########################
+    # Read the data we need #
+    #########################
+    email = request.REQUEST.get('email', None)
+    password = request.REQUEST.get('password', None)
+    if email is None or password is None:
+        return HttpResponseBadRequest('email and password required')
+
+    ########################
+    # Process the business #
+    ########################
+    password = md5(password)
+    user = User.objects.filter(email=email, password=password, deleted=0)
+    if not user.exists():
+        return HttpResponse(json.dumps({'error': 'Incorrect email/password'}))
+
+    user = user[0]
+
+    # Here's how we mark a user as log on
+    request.session['user'] = {'id': user.id, 'username': user.username}
+
+    #######################
+    # Return the response #
+    #######################
+    return HttpResponse(json.dumps({'success': True}))
+
+-------------------------------------------------------
+
+
+    A controller takes one or more arguments, and the first argument is always a HttpRequest object. A controller must return an object of HttpResponse(or other sub-classes).
+
+    request.REQUEST is a dictionary containing the query parameters as well as data payload of the request. Actually, it’s the union of request.GET and request.POST. There’s something tricky here need to be explained in details:
+        Remember we often see urls like: http://.../search?query=foo&page=1? Things after the ? are query parameters. In this case we have two parameters, the first one’s name is query and its value is “foo”, the second one’s name is page and the value is 1. Here, we define query parameters as those parameters encoded in the url after the “?”. We also define data payload as the data contained in http request body
+        When a http request is using GET method, it can only contain query parameters but no data payload
+        When using some other methods, for example POST, we can include data payload, but we can also encode query parameters in url
+        Now we come back to Django. request.GET only contains query parameters; that is, no matter what the http method is, it will contain the parameters encoded in the url in form of ?key1=value1&key2=value2.... request.POST contains the data payload encoded in the body of request if the http method is post. At cases where we need information from both query parameters and data payload, we might just use request.REQUEST
+    In this case, the controller respond with a string in json format (you’ll need basic understanding of json to finish the assignment. If not, google it). It’s just pure text, so passing the text to construct a new HttpResponse instance and return it is sufficient. The same method works for return HTML script. The HttpResponse can not only convey text, but also image, video, zip file, etc. We can also use built-in classes like HttpResponseBadRequest to return response with specific status code.
+
