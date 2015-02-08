@@ -1,3 +1,6 @@
+git clone https://github.com/WebCoursify/src-code-for-full-stack-web-platform
+
+
 Intro to Djano contaroller
 
 Brief introduction of http request and http response
@@ -60,4 +63,66 @@ def login(request):
         When using some other methods, for example POST, we can include data payload, but we can also encode query parameters in url
         Now we come back to Django. request.GET only contains query parameters; that is, no matter what the http method is, it will contain the parameters encoded in the url in form of ?key1=value1&key2=value2.... request.POST contains the data payload encoded in the body of request if the http method is post. At cases where we need information from both query parameters and data payload, we might just use request.REQUEST
     In this case, the controller respond with a string in json format (you’ll need basic understanding of json to finish the assignment. If not, google it). It’s just pure text, so passing the text to construct a new HttpResponse instance and return it is sufficient. The same method works for return HTML script. The HttpResponse can not only convey text, but also image, video, zip file, etc. We can also use built-in classes like HttpResponseBadRequest to return response with specific status code.
+
+
+JSON
+Data types, syntax and example
+
+JSON's basic types are:
+
+    Number — a signed decimal number that may contain a fractional part and may use exponential E notation. JSON does not allow non-numbers like NaN, nor does it make any distinction between integer and floating-point. (Even though JavaScript uses a double-precision floating-point format for all its numeric values, other languages implementing JSON may encode numbers differently)
+    String — a sequence of zero or more Unicode characters. Strings are delimited with double-quotation marks and support a backslash escaping syntax.
+    Boolean — either of the values true or false
+    Array — an ordered list of zero or more values, each of which may be of any type. Arrays use square bracket notation with elements being comma-separated.
+    Object — an unordered collection of name/value pairs where the names (also called keys) are strings. Since objects are intended to represent associative arrays,[10] it is recommended, though not required,[11] that each key is unique within an object. Objects are delimited with curly brackets and use commas to separate each pair, while within each pair the colon ':' character separates the key or name from its value.
+    null — An empty value, using the word null
+
+---------------------------------
+{
+  "firstName": "John",
+  "lastName": "Smith",
+  "isAlive": true,
+  "age": 25,
+  "height_cm": 167.6,
+  "address": {
+    "streetAddress": "21 2nd Street",
+    "city": "New York",
+    "state": "NY",
+    "postalCode": "10021-3100"
+  },
+  "phoneNumbers": [
+    {
+      "type": "home",
+      "number": "212 555-1234"
+    },
+    {
+      "type": "office",
+      "number": "646 555-4567"
+    }
+  ],
+  "children": [],
+  "spouse": null
+}
+-------------------------------------
+
+
+Ajax
+
+JSON is often used in Ajax techniques. Ajax is a term for the ability of a webpage to request new data after it has loaded into the web browser, usually in response to user actions on the displayed webpage. As part of the Ajax model, the new data is usually incorporated into the user interface display dynamically the moment it arrives back from the server. For example when the user is typing into a search box, client-side code sends what they type to a server that will respond with a possible list of items from its database. These might be displayed in a drop-down list beneath the search box. The user may then stop typing and select the relevant string directly. When it was originally implemented in the mid-2000s, Ajax commonly used XML as the data interchange format. Now many developers use JSON to pass the Ajax updates between the server and the client.[28]
+
+The following JavaScript code is just one example of a client using XMLHttpRequest to request data in JSON format from a server. (The server-side programming is omitted; it must be set up to service requests to the url containing a JSON-formatted string.)
+-------------------------------
+var my_JSON_object;
+var http_request = new XMLHttpRequest();
+http_request.open("GET", url, true);
+http_request.onreadystatechange = function () {
+    var done = 4, ok = 200;
+    if (http_request.readyState === done && http_request.status === ok) {
+        my_JSON_object = JSON.parse(http_request.responseText);
+    }
+};
+http_request.send(null);
+--------------------------------
+
+
 
